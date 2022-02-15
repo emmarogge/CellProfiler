@@ -8,6 +8,9 @@ from cellprofiler_core.utilities.core.module.identify import (
     add_object_count_measurements,
     get_object_measurement_columns,
 )
+import cellprofiler
+
+import cellprofiler_library.expandorshrinkobjects 
 
 from cellprofiler.modules import _help
 
@@ -268,59 +271,39 @@ order to keep from breaking up the object or breaking the hole.
 
     def do_labels(self, labels):
         """Run whatever transformation on the given labels matrix"""
-        if self.operation in (O_SHRINK, O_SHRINK_INF) and self.wants_fill_holes.value:
-            labels = centrosome.cpmorphology.fill_labeled_holes(labels)
-
         if self.operation == O_SHRINK_INF:
-            return centrosome.cpmorphology.binary_shrink(labels)
+            return cellprofiler_library.expandorshrinkobjects.shrink_to_point(
+                labels=labels,
+                fill=self.wants_fill_holes.value
+                )
 
         if self.operation == O_SHRINK:
-            return centrosome.cpmorphology.binary_shrink(
-                labels, iterations=self.iterations.value
-            )
+            return cellprofiler_library.expandorshrinkobjects.shrink_defined_pixels(
+                labels=labels,
+                fill=self.wants_fill_holes.value, 
+                iterations=self.iterations.value
+                )
 
-        if self.operation in (O_EXPAND, O_EXPAND_INF):
-            if self.operation == O_EXPAND_INF:
-                distance = numpy.max(labels.shape)
-            else:
-                distance = self.iterations.value
+        if self.operation == O_EXPAND:
+            return cellprofiler_library.expandorshrinkobjects.expand_defined_pixels(
+                labels=labels,
+                iterations=self.iterations.value
+                )            
 
-            background = labels == 0
-
-            distances, (i, j) = scipy.ndimage.distance_transform_edt(
-                background, return_indices=True
-            )
-
-            out_labels = labels.copy()
-
-            mask = background & (distances <= distance)
-
-            out_labels[mask] = labels[i[mask], j[mask]]
-
-            return out_labels
+        if self.operation == O_EXPAND_INF:
+            return cellprofiler_library.expandorshrinkobjects.expand_until_touching(labels=labels)
 
         if self.operation == O_DIVIDE:
-            #
-            # A pixel must be adjacent to some other label and the object
-            # must not disappear.
-            #
-            adjacent_mask = centrosome.cpmorphology.adjacent(labels)
-
-            thinnable_mask = centrosome.cpmorphology.binary_shrink(labels, 1) != 0
-
-            out_labels = labels.copy()
-
-            out_labels[adjacent_mask & ~thinnable_mask] = 0
-
-            return out_labels
+            return cellprofiler_library.expandorshrinkobjects.add_dividing_lines(labels=labels)
 
         if self.operation == O_SKELETONIZE:
-            return centrosome.cpmorphology.skeletonize_labels(labels)
+            return cellprofiler_library.expandorshrinkobjects.skeletonize(labels=labels)
 
         if self.operation == O_SPUR:
-            return centrosome.cpmorphology.spur(
-                labels, iterations=self.iterations.value
-            )
+            return cellprofiler_library.expandorshrinkobjects.despur(
+                labels=labels,
+                iterations=self.iterations.value
+                )
 
         raise NotImplementedError("Unsupported operation: %s" % self.operation.value)
 
