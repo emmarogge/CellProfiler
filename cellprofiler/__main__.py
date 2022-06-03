@@ -129,7 +129,7 @@ def main(args=None):
         return exit_code
 
     options, args = parse_args(args)
-    
+
     if options.print_version:
         set_headless()
         __version__(exit_code)
@@ -236,6 +236,7 @@ def main(args=None):
         raise ValueError("You must specify a pipeline filename to run")
 
     if options.data_file is not None:
+        logging.debug("!!!!!!!!!!!!!!!!!! data-file provided")
         set_data_file(os.path.abspath(options.data_file))
 
     try:
@@ -243,6 +244,7 @@ def main(args=None):
             start_java()
 
         if options.image_set_file is not None:
+            logging.debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! image_set_file is not None")
             set_image_set_file(options.image_set_file)
 
         #
