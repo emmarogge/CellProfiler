@@ -4,7 +4,6 @@ import re
 
 import setuptools.dist
 
-
 def read(*directories):
     pathname = os.path.abspath(os.path.dirname(__file__))
 
@@ -63,7 +62,6 @@ setuptools.setup(
     },
     install_requires=[
         "boto3>=1.12.28",
-        "cellprofiler-core",
         "centrosome==1.2.0",
         "docutils==0.15.2",
         "h5py",
