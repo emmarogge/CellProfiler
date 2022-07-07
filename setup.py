@@ -64,7 +64,8 @@ setuptools.setup(
         "boto3>=1.12.28",
         "centrosome==1.2.0",
         # To prevent loading the current verison from PyPi, provide a non-existent version number.
-        "cellprofiler-core @ git+ssh://git@github.com/emmarogge/core@issues/4547",
+        # "cellprofiler-core @ git+ssh://git@github.com/emmarogge/core@issues/4547",
+        "cellprofiler-core>=5.0.0",
         "docutils==0.15.2",
         "h5py",
         "imageio>=2.5",
@@ -89,9 +90,9 @@ setuptools.setup(
         "wxPython==4.1.0",
     ],
     # Provide link to specific issue branch of cellprofiler-core repository 
-    # dependency_links=[
+    #dependency_links=[
     #     'git+https://github.com/emmarogge/core.git@issues/4547#egg=cellprofiler-core-5.0.0'
-    # ],
+    #],
     license="BSD",
     name="CellProfiler",
     package_data=package_data(),
